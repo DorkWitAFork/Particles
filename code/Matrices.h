@@ -31,7 +31,7 @@ namespace Matrices
 		int getCols() const { return cols; }
 		///************************************
 	protected:
-		///changed to protected so sublasses can modify
+		///changed to protected so subclasses can modify
 		vector<vector<double>> a;
 	private:
 		int rows;
@@ -98,4 +98,6 @@ namespace Matrices
 		TranslationMatrix(double xShift, double yShift, int nCols);
 	};
 }
+
+
 #endif // MATRIX_H_INCLUDED
