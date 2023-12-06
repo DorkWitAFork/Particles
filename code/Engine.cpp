@@ -68,7 +68,7 @@ void Engine::input()
 void Engine::update(float dtAsSeconds)
 {
 	// loop through the particles and update them
-	for (vector<Particle>::iterator p = m_particles.begin(); p != m_particles.end();)
+	for (auto p = m_particles.begin(); p != m_particles.end();)
 	{
 		if (p->getTTL() > 0.0)
 		{
@@ -85,7 +85,7 @@ void Engine::update(float dtAsSeconds)
 void Engine::draw()
 {
 	m_Window.clear();
-	for (vector<Particle>::iterator p = m_particles.begin(); p != m_particles.end(); p++)
+	for (auto p = m_particles.begin(); p != m_particles.end(); p++)
 	{
 		m_Window.draw(*p);
 	}
