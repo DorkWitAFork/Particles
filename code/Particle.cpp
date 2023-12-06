@@ -1,10 +1,11 @@
 #include "Particle.h"
 #include <iostream>
+
 using namespace std;
+using namespace sf;
 
 Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition) : m_A(2,numPoints)
 {
-	m_centerCoordinate = Vector2f(0, 0);
 	m_ttl = TTL;
 	m_numPoints = numPoints;
 	m_radiansPerSec = ((float)rand() / (RAND_MAX)) * M_PI;
@@ -13,8 +14,8 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 	m_cartesianPlane.setCenter(0, 0);
 	m_cartesianPlane.setSize(target.getSize().x, (-1.0) * target.getSize().y);
 
-
-	m_centerCoordinate = m_cartesianPlane.mapPixelToCoords(mouseClickPosition);
+				
+	m_centerCoordinate = target.mapPixelToCoords(mouseClickPosition, m_cartesianPlane);
 	
 	m_vx = (rand() % 400) + 100;
 	m_vy = (rand() % 400) + 100;
@@ -41,15 +42,15 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 void Particle::draw(RenderTarget& target, RenderStates state) const
 {
 	VertexArray lines(TriangleFan, m_numPoints + 1);
-	// we need to change this so that I can make use of the mapCoordsToPixel function
-	Vector2f center = m_cartesianPlane.mapCoordsToPixel(m_centerCoordinate);
+	
+	Vector2f center = (Vector2f)target.mapCoordsToPixel(m_centerCoordinate, m_cartesianPlane);
 	lines[0].position = center;
 	lines[0].color = m_color1;
 
 	for (int j = 1; j <= m_numPoints; j++)
 	{
 		Vector2f mapped_position(m_A(0, j - 1), m_A(1, j - 1));
-		lines[j].position = m_cartesianPlane.mapCoordsToPixel(mapped_position);
+		lines[j].position = (Vector2f)target.mapCoordsToPixel(mapped_position, m_cartesianPlane);
 		lines[j].color = m_color2;
 	}
 
