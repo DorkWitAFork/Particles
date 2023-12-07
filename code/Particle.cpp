@@ -4,28 +4,28 @@
 using namespace std;
 using namespace sf;
 
-Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition) : m_A(2,numPoints)
+Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosition) : m_A(2, numPoints)
 {
 	m_ttl = TTL;
 	m_numPoints = numPoints;
-	m_radiansPerSec = ((float)rand() / (RAND_MAX)) * M_PI;
+	m_radiansPerSec = ((float)rand() / (RAND_MAX)) * MY_PI;
 
 
 	m_cartesianPlane.setCenter(0, 0);
 	m_cartesianPlane.setSize(target.getSize().x, (-1.0) * target.getSize().y);
 
-				
+
 	m_centerCoordinate = target.mapPixelToCoords(mouseClickPosition, m_cartesianPlane);
-	
-	m_vx = (rand() % 400) + 100;
-	m_vy = (rand() % 400) + 100;
+
+	m_vx = (rand() % 400) + 250;
+	m_vy = (rand() % 400) + 250;
 
 	m_color1 = Color::White;
 	m_color2 = Color(rand() % 255, rand() % 255, rand() % 255);
 
-	double theta = ((float)rand() / (RAND_MAX)) * M_PI / 2.0;
-	double dTheta = 2 * M_PI / (numPoints - 1);
-	
+	double theta = ((float)rand() / (RAND_MAX)) * MY_PI / 2.0;
+	double dTheta = 2 * MY_PI / (numPoints - 1);
+
 
 	for (int j = 0; j < numPoints; j++)
 	{
@@ -42,7 +42,7 @@ Particle::Particle(RenderTarget& target, int numPoints, Vector2i mouseClickPosit
 void Particle::draw(RenderTarget& target, RenderStates state) const
 {
 	VertexArray lines(TriangleFan, m_numPoints + 1);
-	
+
 	Vector2f center = (Vector2f)target.mapCoordsToPixel(m_centerCoordinate, m_cartesianPlane);
 	lines[0].position = center;
 	lines[0].color = m_color1;
@@ -70,7 +70,7 @@ void Particle::update(float dt)
 
 void Particle::translate(double xShift, double yShift)
 {
-	TranslationMatrix T(xShift, yShift, m_A.getCols());	
+	TranslationMatrix T(xShift, yShift, m_A.getCols());
 	m_A = T + m_A;
 	m_centerCoordinate.x += xShift;
 	m_centerCoordinate.y += yShift;
@@ -90,6 +90,7 @@ void Particle::scale(double c)
 	Vector2f temp(m_centerCoordinate);
 	translate(-m_centerCoordinate.x, -m_centerCoordinate.y);
 	ScalingMatrix S(c);
+	m_A = S * m_A;
 	translate(temp.x, temp.y);
 }
 
@@ -101,8 +102,8 @@ void Particle::unitTests()
 {
 	int score = 0;
 	cout << "Testing RotationMatrix constructor...";
-	double theta = M_PI / 4.0;
-	RotationMatrix r(M_PI / 4);
+	double theta = MY_PI / 4.0;
+	RotationMatrix r(MY_PI / 4);
 	if (r.getRows() == 2 && r.getCols() == 2 && almostEqual(r(0, 0), cos(theta))
 		&& almostEqual(r(0, 1), -sin(theta))
 		&& almostEqual(r(1, 0), sin(theta))
@@ -161,7 +162,7 @@ void Particle::unitTests()
 	}
 	cout << "Applying one rotation of 90 degrees about the origin..." << endl;
 	Matrix initialCoords = m_A;
-	rotate(M_PI / 2.0);
+	rotate(MY_PI / 2.0);
 	bool rotationPassed = true;
 	for (int j = 0; j < initialCoords.getCols(); j++)
 	{
@@ -170,7 +171,7 @@ void Particle::unitTests()
 		{
 			cout << "Failed mapping: ";
 			cout << "(" << initialCoords(0, j) << ", " << initialCoords(1, j) << ") ==> (" << m_A(0, j) << ", " << m_A(1, j) << ")" << endl;
-				rotationPassed = false;
+			rotationPassed = false;
 		}
 	}
 	if (rotationPassed)
@@ -193,7 +194,7 @@ void Particle::unitTests()
 		{
 			cout << "Failed mapping: ";
 			cout << "(" << initialCoords(0, j) << ", " << initialCoords(1, j) << ") ==> (" << m_A(0, j) << ", " << m_A(1, j) << ")" << endl;
-				scalePassed = false;
+			scalePassed = false;
 		}
 	}
 	if (scalePassed)
@@ -216,7 +217,7 @@ void Particle::unitTests()
 		{
 			cout << "Failed mapping: ";
 			cout << "(" << initialCoords(0, j) << ", " << initialCoords(1, j) << ") ==> (" << m_A(0, j) << ", " << m_A(1, j) << ")" << endl;
-				translatePassed = false;
+			translatePassed = false;
 		}
 	}
 	if (translatePassed)
@@ -230,4 +231,3 @@ void Particle::unitTests()
 	}
 	cout << "Score: " << score << " / 7" << endl;
 }
-
