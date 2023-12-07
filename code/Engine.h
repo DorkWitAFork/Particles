@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Particle.h"
 using namespace sf;
 using namespace std;
@@ -26,6 +27,10 @@ public:
 
 	// Run will call all the private functions
 	void run();
+
+	// Setup for our sounds in engine
+	SoundBuffer buffer;
+	Sound sound;
 };
 
 #pragma once
