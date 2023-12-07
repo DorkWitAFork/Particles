@@ -1,27 +1,36 @@
 #include "Engine.h"
+#include <filesystem>
 
+using namespace std;
 
 
 Engine::Engine()
 {
-    int x = VideoMode::getDesktopMode().width;
-    int y = VideoMode::getDesktopMode().height;
+	int x = VideoMode::getDesktopMode().width;
+	int y = VideoMode::getDesktopMode().height;
 	m_Window.create(sf::VideoMode(x, y), "Particle System");
+	
+	// Load the sound in the constructor
+	if (!buffer.loadFromFile("sounds/fireworks.wav"))
+	{
+		cout << "Error loading sound file" << endl;
+	}
+	sound.setBuffer(buffer);
 }
 
 void Engine::run()
 {
-	
+
 	Clock clock;
-	
+
 	cout << "Starting Particle unit tests..." << endl;
 	Particle p(m_Window, 4, { (int)m_Window.getSize().x / 2, (int)m_Window.getSize().y / 2 });
 	p.unitTests();
 	cout << "Unit tests complete.  Starting engine..." << endl;
-	
+
 	while (m_Window.isOpen())
 	{
-		
+
 		Time dt = clock.restart();
 
 		// Convert the time to seconds
@@ -31,7 +40,7 @@ void Engine::run()
 		input();
 
 		update(dtAsSeconds);
-		
+
 		draw();
 	}
 }
@@ -53,9 +62,11 @@ void Engine::input()
 		{
 			if (event.mouseButton.button == Mouse::Left)
 			{
-				for (int i = 0; i < 5; i++)
+				for (int i = 0; i < 20; i++)
 				{
-					int numPoints = rand() % 25 + 25; // random number between 25 and 50
+					// Play the firework sound whenever they click
+					sound.play();
+					int numPoints = rand() % 25 + 50; // random number between 25 and 50
 					Vector2i mousePos = Mouse::getPosition(m_Window);
 					Particle p(m_Window, numPoints, mousePos);
 					m_particles.push_back(p);
@@ -91,4 +102,3 @@ void Engine::draw()
 	}
 	m_Window.display();
 }
-
